@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "splash") {
                         composable("splash") { SplashScreen(navController) }
                         composable("home") { HomeScreen(navController) }
+                        composable("about") { AboutScreen(navController) }
                         composable("trend_board") { TrendBoardScreen(navController) }
                         composable("loom_gallery") { LoomGalleryScreen(navController, loomViewModel) }
                         composable("upload_saree") { 

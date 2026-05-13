@@ -368,33 +368,29 @@ fun HomeScreen(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "No results", color = Color.Gray)
                 }
             } else {
-                filteredItems.chunked(2).forEach { rowItems ->
+                filteredItems.chunked(1).forEach { rowItems ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         rowItems.forEach { item ->
                             DashboardCard(
                                 item = item,
                                 onClick = { navController.navigate(item.route) },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.fillMaxWidth()
                             )
-                        }
-
-                        if (rowItems.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
 
@@ -418,7 +414,7 @@ fun HomeScreen(navController: NavController) {
                     elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
                     AsyncImage(
-                        model = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1400",
+                        model = R.drawable.about,
                         contentDescription = "About us image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -439,7 +435,7 @@ fun HomeScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Button(
-                        onClick = { /* navigate to about page */ },
+                        onClick = { navController.navigate("about") },
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryGold),
                         shape = RoundedCornerShape(10.dp)
                     ) {
@@ -488,7 +484,7 @@ fun DashboardCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = modifier
             .fillMaxWidth()
-            .height(190.dp)
+            .height(120.dp)
     ) {
 
         Column(
