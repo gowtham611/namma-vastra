@@ -29,7 +29,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "home") {
+                    NavHost(navController = navController, startDestination = "splash") {
+                        composable("splash") { SplashScreen(navController) }
                         composable("home") { HomeScreen(navController) }
                         composable("trend_board") { TrendBoardScreen(navController) }
                         composable("loom_gallery") { LoomGalleryScreen(navController, loomViewModel) }

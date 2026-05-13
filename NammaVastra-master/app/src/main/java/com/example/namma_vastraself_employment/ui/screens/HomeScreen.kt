@@ -2,15 +2,19 @@ package com.example.namma_vastraself_employment.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,11 +23,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.namma_vastraself_employment.R
+import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 
 // ===========================
 // COLORS
@@ -93,21 +100,41 @@ fun HomeScreen(navController: NavController) {
                     containerColor = DarkBrown
                 ),
                 title = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "NAMMA VASTRA",
-                            color = PrimaryGold,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 3.sp
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        val logo = painterResource(id = R.drawable.logo)
+                        Icon(painter = logo, contentDescription = "logo", tint = Color.Unspecified, modifier = Modifier.size(36.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "NAMMA VASTRA",
+                                color = PrimaryGold,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 1.5.sp
+                            )
 
-                        Text(
-                            text = "Empowering Local Weavers",
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 11.sp
+                            Text(
+                                text = "Empowering Local Weavers",
+                                color = Color.White.copy(alpha = 0.85f),
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { /* profile */ }) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = PrimaryGold
+                        )
+                    }
+
+                    IconButton(onClick = { /* notifications */ }) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White.copy(alpha = 0.9f)
                         )
                     }
                 }
@@ -119,36 +146,84 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(rememberScrollState())
                 .background(Cream)
+                .verticalScroll(rememberScrollState())
         ) {
 
             // ===========================
             // HERO SECTION
             // ===========================
 
+            // Search bar below the app bar
+            Spacer(modifier = Modifier.height(12.dp))
+            // Search bar
+            val searchQuery = remember { mutableStateOf("") }
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = searchQuery.value,
+                    onValueChange = { searchQuery.value = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    placeholder = { Text(text = "Search designs, weavers, collections") },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                    },
+                    shape = RoundedCornerShape(14.dp),
+                    singleLine = true
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // HERO: layered image with color grading, rounded bottom and CTAs
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(360.dp)
+                    .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
             ) {
 
-                AsyncImage(
-                    model = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1200",
-                    contentDescription = null,
+                // Use local drawable resource for hero image. Place your image at:
+                // app/src/main/res/drawable/hero_image.jpg
+                Image(
+                    painter = painterResource(id = R.drawable.hero_image),
+                    contentDescription = "Handloom hero",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
 
+                // subtle warm color grading overlay (gold -> transparent)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.75f)
+                                    Color(0x44000000),
+                                    Color(0x22000000)
                                 )
+                            )
+                        )
+                )
+
+                // warm glow on left-bottom
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    PrimaryGold.copy(alpha = 0.18f),
+                                    Color.Transparent
+                                ),
+                                center = androidx.compose.ui.geometry.Offset(220f, 420f),
+                                radius = 600f
                             )
                         )
                 )
@@ -156,30 +231,61 @@ fun HomeScreen(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(24.dp)
+                        .padding(22.dp)
                 ) {
 
                     Text(
                         text = "Preserving",
-                        color = Color.White,
-                        fontSize = 34.sp,
-                        fontWeight = FontWeight.Bold
+                        color = Cream,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.ExtraBold
                     )
 
                     Text(
                         text = "Indian Handloom Heritage",
                         color = PrimaryGold,
-                        fontSize = 26.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Directly connecting weavers with customers through technology.",
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontSize = 14.sp
+                        text = "Directly connect with customers, showcase your craft, and grow sustainably.",
+                        color = Color(0xFFFAF7EE).copy(alpha = 0.95f),
+                        fontSize = 13.sp
                     )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Button(
+                            onClick = { navController.navigate("loom_gallery") },
+                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryGold),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.height(44.dp)
+                        ) {
+                            Text(text = "Explore Collections", color = DarkBrown, fontWeight = FontWeight.SemiBold)
+                        }
+
+                        OutlinedButton(
+                            onClick = { navController.navigate("upload_saree") },
+                            colors = ButtonDefaults.outlinedButtonColors(),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.height(44.dp)
+                        ) {
+                            Text(text = "Sell on NammaVastra", color = Color.White)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // category chips
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TagChip(text = "Sarees")
+                        TagChip(text = "Blouses")
+                        TagChip(text = "Handloom")
+                    }
                 }
             }
 
@@ -225,54 +331,141 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
 
-                Text(
-                    text = "Craftsman Dashboard",
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkBrown
-                )
+                Column {
+                    Text(
+                        text = "Craftsman Dashboard",
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DarkBrown
+                    )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Box(
-                    modifier = Modifier
-                        .width(80.dp)
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(PrimaryGold)
-                )
+                    Box(
+                        modifier = Modifier
+                            .width(90.dp)
+                            .height(5.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(PrimaryGold)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // filter dashboard items by search
+            val filteredItems = remember(searchQuery.value) {
+                if (searchQuery.value.isBlank()) dashboardItems
+                else dashboardItems.filter {
+                    it.title.contains(searchQuery.value, ignoreCase = true) ||
+                        it.subtitle.contains(searchQuery.value, ignoreCase = true)
+                }
+            }
+
+            if (filteredItems.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No results", color = Color.Gray)
+                }
+            } else {
+                filteredItems.chunked(2).forEach { rowItems ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        rowItems.forEach { item ->
+                            DashboardCard(
+                                item = item,
+                                onClick = { navController.navigate(item.route) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        if (rowItems.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
 
             // ===========================
-            // GRID
+            // ABOUT US
             // ===========================
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(700.dp),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                userScrollEnabled = false
+                    .padding(horizontal = 20.dp)
+                    .height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-                items(dashboardItems) { item ->
-
-                    DashboardCard(
-                        item = item,
-                        onClick = {
-                            navController.navigate(item.route)
-                        }
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    AsyncImage(
+                        model = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1400",
+                        contentDescription = "About us image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1.2f)) {
+                    Text(text = "About Namma Vastra", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = DarkBrown)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Namma Vastra connects local weavers to customers, preserves handloom traditions, and helps craftsmen grow sustainably.",
+                        fontSize = 14.sp,
+                        color = Color.DarkGray
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = { /* navigate to about page */ },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGold),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(text = "Learn more", color = DarkBrown)
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
+    }
+}
+
+@Composable
+fun TagChip(text: String) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White.copy(alpha = 0.12f),
+        tonalElevation = 0.dp
+    ) {
+        Text(
+            text = text,
+            color = Color(0xFFFAF7EE),
+            fontSize = 12.sp,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        )
     }
 }
 
@@ -284,19 +477,16 @@ fun HomeScreen(navController: NavController) {
 @Composable
 fun DashboardCard(
     item: DashboardItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     Card(
         onClick = onClick,
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CardColor
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        ),
-        modifier = Modifier
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = CardColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = modifier
             .fillMaxWidth()
             .height(190.dp)
     ) {
@@ -304,49 +494,65 @@ fun DashboardCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(18.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
 
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                PrimaryGold,
-                                Color(0xFFE7C06D)
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
 
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = DarkBrown,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
+                // compact thumbnail for two-column layout
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFF6E9DA)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.hero_image),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
-            Column {
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Text(
-                    text = item.title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkBrown
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = item.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DarkBrown
+                    )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = item.subtitle,
-                    fontSize = 13.sp,
-                    color = Color.Gray
-                )
+                    Text(
+                        text = item.subtitle,
+                        fontSize = 13.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                // badge (example: show count for Orders, New for Upload)
+                val badge = when (item.title) {
+                    "Orders" -> "5"
+                    "Upload Saree" -> "New"
+                    else -> null
+                }
+
+                if (badge != null) {
+                    Surface(
+                        color = PrimaryGold,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text(text = badge, modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp), color = DarkBrown)
+                    }
+                } else {
+                    Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+                }
             }
         }
     }
