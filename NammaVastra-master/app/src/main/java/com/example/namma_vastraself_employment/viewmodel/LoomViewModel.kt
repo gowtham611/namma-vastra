@@ -14,6 +14,10 @@ import java.util.UUID
 
 class LoomViewModel : ViewModel() {
     // Session-based local list to ensure the app works even without Firebase
+    private fun drawableUri(name: String): String {
+        return "android.resource://com.example.namma_vastraself_employment/drawable/$name"
+    }
+
     private val _localSarees = mutableListOf(
         Saree(
             id = "1",
@@ -34,6 +38,76 @@ class LoomViewModel : ViewModel() {
             imageUrl = "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=800",
             description = "Handwoven Mustard Gold Festive Saree",
             price = 6800.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-1",
+            imageUrl = drawableUri("trend1"),
+            description = "Emerald Green Silk Ilkal Saree",
+            price = 5200.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-2",
+            imageUrl = drawableUri("trend2"),
+            description = "Magenta Banarasi Brocade Saree",
+            price = 9800.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-3",
+            imageUrl = drawableUri("trend3"),
+            description = "Classic Mustard Gold Zari Saree",
+            price = 7300.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-4",
+            imageUrl = drawableUri("trend4"),
+            description = "Peacock Blue Molakalmuru Saree",
+            price = 11200.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-5",
+            imageUrl = drawableUri("trend5"),
+            description = "Crimson Red Temple Border Saree",
+            price = 6900.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-6",
+            imageUrl = drawableUri("trend6"),
+            description = "Pastel Cotton Jamdani Saree",
+            price = 4100.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-7",
+            imageUrl = drawableUri("trend7"),
+            description = "Midnight Indigo Ajrakh Saree",
+            price = 5600.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-8",
+            imageUrl = drawableUri("trend8"),
+            description = "Sunrise Peach Chanderi Saree",
+            price = 6400.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-9",
+            imageUrl = drawableUri("trend9"),
+            description = "Terracotta Checks Cotton Saree",
+            price = 3800.0,
+            phoneNumber = "919876543210"
+        ),
+        Saree(
+            id = "trend-10",
+            imageUrl = drawableUri("trend10"),
+            description = "Royal Blue Patola Saree",
+            price = 12800.0,
             phoneNumber = "919876543210"
         )
     )

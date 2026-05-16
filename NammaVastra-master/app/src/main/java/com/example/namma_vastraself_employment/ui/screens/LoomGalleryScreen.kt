@@ -17,18 +17,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.namma_vastraself_employment.R
 import com.example.namma_vastraself_employment.model.Saree
 import com.example.namma_vastraself_employment.viewmodel.LoomViewModel
 
@@ -38,6 +41,7 @@ fun LoomGalleryScreen(navController: NavController, viewModel: LoomViewModel) {
     val sarees by viewModel.sarees.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val context = LocalContext.current
+    val visibleSarees = remember(sarees) { sarees.filter { it.imageUrl.isNotBlank() } }
 
     Scaffold(
         topBar = {
@@ -100,7 +104,7 @@ fun LoomGalleryScreen(navController: NavController, viewModel: LoomViewModel) {
                         )
                     }
                     
-                    items(sarees) { saree ->
+                    items(visibleSarees) { saree ->
                         SareeItem(saree = saree, onContactClick = {
                             try {
                                 val url = "https://wa.me/${saree.phoneNumber}?text=Namaste! I am interested in your saree: ${saree.description}"
@@ -141,7 +145,9 @@ fun SareeItem(saree: Saree, onContactClick: () -> Unit) {
                         .fillMaxWidth()
                         .height(350.dp)
                         .clip(RoundedCornerShape(28.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.trend1),
+                    error = painterResource(id = R.drawable.trend2)
                 )
                 
                 // Price Tag Overlay
