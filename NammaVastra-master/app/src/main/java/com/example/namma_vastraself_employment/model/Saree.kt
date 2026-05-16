@@ -9,6 +9,6 @@ data class Saree(
 )
 
 data class TrendItem(
-    val imageUrl: String,
+    val imageRes: Int,
     val title: String
 )

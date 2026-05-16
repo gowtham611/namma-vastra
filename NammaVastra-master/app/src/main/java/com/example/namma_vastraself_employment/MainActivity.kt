@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                         composable("splash") { SplashScreen(navController) }
                         composable("home") { HomeScreen(navController) }
                         composable("about") { AboutScreen(navController) }
-                        composable("trend_board") { TrendBoardScreen(navController) }
+                        composable("trend_board") { TrendBoardScreen(navController, loomViewModel) }
                         composable("loom_gallery") { LoomGalleryScreen(navController, loomViewModel) }
                         composable("upload_saree") { 
                             UploadSareeScreen(navController, loomViewModel) {
@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable("price_calculator") { PriceCalculatorScreen(navController) }
+                        composable("orders") { OrdersScreen(navController) }
                         composable("weaver_story") { WeaverStoryScreen(navController) }
                     }
                 }
