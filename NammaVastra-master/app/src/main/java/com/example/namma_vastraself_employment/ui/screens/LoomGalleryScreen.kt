@@ -17,7 +17,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -42,6 +45,10 @@ fun LoomGalleryScreen(navController: NavController, viewModel: LoomViewModel) {
     val isLoading by viewModel.isLoading.collectAsState()
     val context = LocalContext.current
     val visibleSarees = remember(sarees) { sarees.filter { it.imageUrl.isNotBlank() } }
+    
+    var showOrderDialog by remember { mutableStateOf(false) }
+    var selectedQuantity by remember { mutableStateOf(1) }
+    var selectedSareeForOrder by remember { mutableStateOf<Saree?>(null) }
 
     Scaffold(
         topBar = {
@@ -113,6 +120,9 @@ fun LoomGalleryScreen(navController: NavController, viewModel: LoomViewModel) {
                             } catch (e: Exception) {
                                 Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
                             }
+                        }, onOrderClick = {
+                            selectedSareeForOrder = saree
+                            showOrderDialog = true
                         })
                     }
                 }
@@ -126,10 +136,31 @@ fun LoomGalleryScreen(navController: NavController, viewModel: LoomViewModel) {
             }
         }
     }
+
+    if (showOrderDialog && selectedSareeForOrder != null) {
+        OrderQuantityDialog(
+            itemTitle = selectedSareeForOrder?.description.orEmpty(),
+            quantity = selectedQuantity,
+            onQuantityChange = { selectedQuantity = it },
+            onConfirm = {
+                val message = "Hi! I'm interested in ordering ${selectedQuantity} of your ${selectedSareeForOrder?.description} saree(s). Can you help me with availability and pricing? Email: www.gow2003@gmail.com"
+                val url = "https://wa.me/6363330757?text=${Uri.encode(message)}"
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
+                }
+                showOrderDialog = false
+                selectedQuantity = 1
+            },
+            onDismiss = { showOrderDialog = false }
+        )
+    }
 }
 
 @Composable
-fun SareeItem(saree: Saree, onContactClick: () -> Unit) {
+fun SareeItem(saree: Saree, onContactClick: () -> Unit, onOrderClick: () -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = RoundedCornerShape(28.dp),
@@ -217,7 +248,98 @@ fun SareeItem(saree: Saree, onContactClick: () -> Unit) {
                         Text("Chat with Weaver")
                     }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onOrderClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                ) {
+                    Text("Order Now", fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
+}
+
+@Composable
+private fun OrderQuantityDialog(
+    itemTitle: String,
+    quantity: Int,
+    onQuantityChange: (Int) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Order $itemTitle",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = "How many items would you like to order?",
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = { if (quantity > 1) onQuantityChange(quantity - 1) },
+                        modifier = Modifier.size(40.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("-", fontSize = 18.sp)
+                    }
+
+                    Text(
+                        text = quantity.toString(),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .width(40.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Button(
+                        onClick = { if (quantity < 99) onQuantityChange(quantity + 1) },
+                        modifier = Modifier.size(40.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("+", fontSize = 18.sp)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text("Proceed to WhatsApp", color = Color.White, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

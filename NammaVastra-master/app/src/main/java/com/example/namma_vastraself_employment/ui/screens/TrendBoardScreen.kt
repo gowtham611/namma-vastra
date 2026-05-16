@@ -1,5 +1,8 @@
 package com.example.namma_vastraself_employment.ui.screens
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -25,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -69,6 +74,10 @@ fun TrendBoardScreen(navController: NavController, viewModel: LoomViewModel) {
 
     val sarees by viewModel.sarees.collectAsState()
     var selectedTrend by remember { mutableStateOf<TrendItem?>(null) }
+    var showOrderDialog by remember { mutableStateOf(false) }
+    var selectedQuantity by remember { mutableStateOf(1) }
+    var selectedTrendForOrder by remember { mutableStateOf<TrendItem?>(null) }
+    val context = LocalContext.current
 
     val trends = listOf(
         TrendItem(R.drawable.trend1, "Emerald Green Silk Ilkal"),
@@ -245,12 +254,37 @@ fun TrendBoardScreen(navController: NavController, viewModel: LoomViewModel) {
                             item,
                             cardInk = cardInk,
                             accentLime = accentLime,
-                            onClick = { selectedTrend = item }
+                            onClick = { selectedTrend = item },
+                            onOrderClick = {
+                                selectedTrendForOrder = item
+                                showOrderDialog = true
+                            }
                         )
                     }
                 }
             }
         }
+    }
+
+    if (showOrderDialog && selectedTrendForOrder != null) {
+        OrderQuantityDialog(
+            itemTitle = selectedTrendForOrder?.title.orEmpty(),
+            quantity = selectedQuantity,
+            onQuantityChange = { selectedQuantity = it },
+            onConfirm = {
+                val message = "Hi! I'm interested in ordering ${selectedQuantity} of your ${selectedTrendForOrder?.title} saree(s). Can you help me with availability and pricing? Email: www.gow2003@gmail.com"
+                val url = "https://wa.me/6363330757?text=${Uri.encode(message)}"
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "WhatsApp not installed", Toast.LENGTH_SHORT).show()
+                }
+                showOrderDialog = false
+                selectedQuantity = 1
+            },
+            onDismiss = { showOrderDialog = false }
+        )
     }
 
     if (selectedTrend != null) {
@@ -304,7 +338,7 @@ fun TrendBoardScreen(navController: NavController, viewModel: LoomViewModel) {
 }
 
 @Composable
-fun TrendCard(item: TrendItem, cardInk: Color, accentLime: Color, onClick: () -> Unit) {
+fun TrendCard(item: TrendItem, cardInk: Color, accentLime: Color, onClick: () -> Unit, onOrderClick: () -> Unit) {
     Card(
         onClick = onClick,
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -383,6 +417,24 @@ fun TrendCard(item: TrendItem, cardInk: Color, accentLime: Color, onClick: () ->
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.65f)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = onOrderClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(36.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = accentLime),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Order Now",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1A1A1A)
+                    )
+                }
             }
         }
     }
@@ -455,4 +507,81 @@ private fun trendInsight(title: String): String {
         else ->
             "Vibrant color stories and heritage borders are the highlight this season. These picks blend artisan craft with a modern, wearable finish."
     }
+}
+
+@Composable
+private fun OrderQuantityDialog(
+    itemTitle: String,
+    quantity: Int,
+    onQuantityChange: (Int) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Order $itemTitle",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = "How many items would you like to order?",
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = { if (quantity > 1) onQuantityChange(quantity - 1) },
+                        modifier = Modifier.size(40.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("-", fontSize = 18.sp)
+                    }
+
+                    Text(
+                        text = quantity.toString(),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .width(40.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Button(
+                        onClick = { if (quantity < 99) onQuantityChange(quantity + 1) },
+                        modifier = Modifier.size(40.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text("+", fontSize = 18.sp)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB7FF4A))
+            ) {
+                Text("Proceed to WhatsApp", color = Color(0xFF1A1A1A), fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
