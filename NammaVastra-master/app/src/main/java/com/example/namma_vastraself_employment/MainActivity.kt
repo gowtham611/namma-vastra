@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "splash") {
                         composable("splash") { SplashScreen(navController) }
+                        composable("login") { LoginScreen(navController) }
                         composable("home") { HomeScreen(navController) }
                         composable("about") { AboutScreen(navController) }
                         composable("trend_board") { TrendBoardScreen(navController, loomViewModel) }

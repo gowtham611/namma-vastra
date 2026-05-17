@@ -11,16 +11,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.namma_vastraself_employment.R
+import com.example.namma_vastraself_employment.data.LocalAuthStore
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavController) {
+    val context = LocalContext.current
+
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
@@ -41,7 +45,8 @@ fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         delay(1400)
-        navController.navigate("home") {
+        val destination = if (LocalAuthStore.isLoggedIn(context)) "home" else "login"
+        navController.navigate(destination) {
             popUpTo("splash") { inclusive = true }
         }
     }
